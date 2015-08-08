@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Primary Colors -->
+    <color name="teal_100">#B2DFDB</color>
+    <color name="teal_500">#009688</color>
+    <color name="teal_700">#00796B</color>
+
+    <!-- Accent Color -->
+    <color name="yellow_500">#FFEB3B</color>
+
+    <!-- Text -->
+    <color name="white">#FFFFFF</color>
+    <color name="light_grey">#B6B6B6</color>
+    <color name="grey_700">#616161</color>
+    <color name="black_900">#212121</color>
+
+</resources>

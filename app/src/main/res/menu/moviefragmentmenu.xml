@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--For testing purposes only-->
+    <item android:id="@+id/refresh"
+          app:showAsAction="never"
+          android:title="@string/action_refresh"
+          android:visible="false"/>
+
+    <!-- For possible future use. I had wanted to use an button which alternates between
+         "Most Popular" and "Top Rated" when you click on it, to change the sort method.
+         (instead of using a separate settings activity -->
+    <item
+        android:id="@+id/most_popular"
+        app:showAsAction="always"
+        android:title="@string/sort_most_popular_title"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/top_rated"
+        app:showAsAction="always"
+        android:title="@string/sort_top_rated_title"
+        android:visible="false"/>
+
+</menu>

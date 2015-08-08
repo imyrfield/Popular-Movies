@@ -1,0 +1,17 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="default_margin">16dp</dimen>
+    <dimen name="margin.half">8dp</dimen>
+
+    <!-- Text Sizing -->
+    <dimen name="text.size.largest">35sp</dimen>
+    <dimen name="text.size.large">25sp</dimen>
+    <dimen name="text.size.medium">20sp</dimen>
+    <dimen name="text.size.small">15sp</dimen>
+    <dimen name="text.size.smallest">3sp</dimen>
+
+    <!-- Text  -->
+    <dimen name="title.view.height">100dp</dimen>
+
+</resources>

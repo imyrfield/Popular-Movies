@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Entries for Setting "Sort Method" -->
+    <string-array name="pref_sort_entries">
+        <item>@string/sort_most_popular_title</item>
+        <item>@string/sort_top_rated_title</item>
+    </string-array>
+
+    <!-- Values for Setting "Sort Method" -->
+    <string-array name="pref_sort_values">
+        <item>@string/param_sort_most_popular</item>
+        <item>@string/param_sort_top_rated</item>
+    </string-array>
+
+</resources>
