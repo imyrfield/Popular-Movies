@@ -36,6 +36,7 @@ public class MovieFragment extends Fragment {
     private GridAdapter mGridAdapter;
     private String mSearchParam;
     private SharedPreferences mSharedPreferences;
+    private String lastSort;
 
     public MovieFragment() {
     }
@@ -45,12 +46,7 @@ public class MovieFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("movie", mMovieList);
-        super.onSaveInstanceState(outState);
+        Log.d("MovieFragment", "onCreate");
     }
 
     @Override
@@ -81,33 +77,18 @@ public class MovieFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        //Initializes Preferences and assigns mSearchParam with preference value for
-        // sorting
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences
-                (getActivity());
-        mSearchParam = mSharedPreferences.getString(getString(R.string.pref_sort_key), getString
-                (R.string.pref_sort_default));
-
-        //Starts Network Call and clears previous array
-        mMovieList.clear();
-        fetchData(mSearchParam);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         if(savedInstanceState == null || !savedInstanceState.containsKey("movie")){
-            mMovieList = new ArrayList<Movie>();
             Log.d("MovieFragment", "onCreateView (line 114): no saved instance found");
+            mMovieList = new ArrayList<Movie>();
         }
         else {
-            mMovieList = savedInstanceState.getParcelableArrayList("movie");
             Log.d("MovieFragment", "onCreateView (line 118): restoring saved instance " +
                     "state");
+            mMovieList = savedInstanceState.getParcelableArrayList("movie");
+            lastSort = savedInstanceState.getString("lastSort");
         }
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -137,8 +118,30 @@ public class MovieFragment extends Fragment {
         return rootView;
     }
 
-    public void fetchData(String searchParam) {
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("MovieFragment", "onResume");
+        String currentSortPref = getSortPref();
+        if(!currentSortPref.equals(lastSort) || mMovieList == null) {
 
+            lastSort = currentSortPref;
+            // Clears previous array
+            if(mMovieList != null) mMovieList.clear();
+            // Starts Network Call
+            fetchData(lastSort);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("movie", mMovieList);
+        outState.putString("lastSort", mSearchParam);
+        super.onSaveInstanceState(outState);
+    }
+
+    public void fetchData(String searchParam) {
+        Log.d("MovieFragment", "fetchData");
         Utility util = new Utility();
         String url = util.getUrl(getActivity(), searchParam);
 
@@ -149,8 +152,8 @@ public class MovieFragment extends Fragment {
                     public void onResponse(JSONObject response) {
 
                         //Returns full Json request string
-                        Log.d("MovieFragment", "onResponse (line 118): " + response
-                                .toString());
+                        // Log.d("MovieFragment", "onResponse (line 118): " + response
+                        //        .toString());
 
                         //Parsing JSON
                         try {
@@ -190,5 +193,16 @@ public class MovieFragment extends Fragment {
 
         //Adding request to request queue;
         VolleyClass.getInstance().addToRequestQueue(movieReq);
+    }
+
+    //Initializes Preferences and assigns mSearchParam with preference value for
+    // sorting
+    private String getSortPref() {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences
+                (getActivity());
+        mSearchParam = mSharedPreferences.getString(getString(R.string.pref_sort_key), getString(R
+                .string.pref_sort_default));
+
+        return mSearchParam;
     }
 }
