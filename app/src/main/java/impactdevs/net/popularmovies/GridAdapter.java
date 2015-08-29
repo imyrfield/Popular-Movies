@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
@@ -62,11 +63,11 @@ public class GridAdapter extends BaseAdapter {
 
         //Image
         Utility utility = new Utility();
-            Glide.with(mActivity)
-                    .load(utility.getImageUrl(m.getThumbnailUrl()))
-                    .error(R.drawable.placeholder)
-                    .crossFade()
-                    .into(imageView);
+        DrawableRequestBuilder builder = Glide.with(mActivity)
+                .load(utility.getImageUrl(m.getThumbnailUrl()))
+                .error(R.drawable.placeholder)
+                .crossFade();
+        builder.into(imageView);
 
         return convertView;
     }

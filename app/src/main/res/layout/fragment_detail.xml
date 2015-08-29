@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:context=".DetailActivity$DetailFragment"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,8 +14,8 @@
         <!-- AutoFits text which is would otherwise run off the screen -->
         <me.grantland.widget.AutofitTextView
             android:id="@+id/detailview_title"
-            tools:text="Jurrasic Park"
             style="@style/style_text_title"
+            tools:text="Jurrasic Park"
             />
 
         <!-- Main details portion-->
@@ -26,45 +28,45 @@
 
             <ImageView
                 android:id="@+id/detailview_poster"
-                tools:src="@drawable/jpark"
-                android:layout_height="wrap_content"
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:paddingLeft="@dimen/margin.half"
                 android:paddingRight="@dimen/margin.half"
+                tools:src="@drawable/jpark"
                 />
 
             <!--Content to the right of the image -->
             <LinearLayout
-                android:layout_height="match_parent"
                 android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
                 android:layout_margin="@dimen/default_margin"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/detailview_release_date"
-                    tools:text="2015"
+                    style="@style/style_text_medium"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    style="@style/style_text_medium"
+                    tools:text="2015"
                     />
 
                 <TextView
                     android:id="@+id/detailview_duration"
-                    tools:text="120min"
+                    style="@style/style_text_medium"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    style="@style/style_text_medium"
+                    tools:text="120min"
                     />
 
                 <TextView
                     android:id="@+id/detailview_rating"
-                    tools:text="7.0/10"
+                    style="@style/style_text_medium"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    style="@style/style_text_medium"
+                    tools:text="7.0/10"
 
                     />
 
@@ -78,31 +80,31 @@
         </LinearLayout>
 
         <!-- Bottom portion of screen (Synopsis, and Trailer)-->
-        <TextView
-            android:id="@+id/detailview_synopsis"
-            tools:text="Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond."
-            android:layout_height="wrap_content"
-            style="@style/style_text_small"/>
+        <android.support.v4.app.FragmentTabHost
+            android:id="@android:id/tabhost"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
 
-        <TextView
-            android:id="@+id/divider1"
-            style="@style/divider"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/detailview_trailers_title"
-            android:text="@string/detailview_trailers_title"
-            android:layout_height="wrap_content"
-            style="@style/style_text_small"/>
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"/>
 
-        <TextView
-            android:id="@+id/divider2"
-            style="@style/divider"/>
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
 
-        <TextView
-            android:id="@+id/detailview_reviews_title"
-            android:text="@string/detailview_reviews_title"
-            android:layout_height="wrap_content"
-            style="@style/style_text_small"/>
-
+                    />
+            </LinearLayout>
+        </android.support.v4.app.FragmentTabHost>
     </LinearLayout>
-</ScrollView>
+</FrameLayout>

@@ -13,6 +13,7 @@ public class Movie implements Parcelable{
     private int duration;
     private double rating;
 
+
     public Movie() {
     }
 
@@ -28,16 +29,16 @@ public class Movie implements Parcelable{
         this.id = id;
     }
 
-    public String getMovieSynopsis() {
-        return movieSynopsis;
-    }
-
     public int getDuration() {
         return duration;
     }
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getMovieSynopsis() {
+        return movieSynopsis;
     }
 
     public void setMovieSynopsis(String movieSynopsis) {
