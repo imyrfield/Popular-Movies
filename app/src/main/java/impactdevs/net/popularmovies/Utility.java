@@ -1,6 +1,7 @@
 package impactdevs.net.popularmovies;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
@@ -12,6 +13,27 @@ public class Utility {
 
     public String url;
     public String imageUrl;
+
+    //Reducing string from 2015-06-12 to just 2015
+    public static String formatDate(String date) {
+        return date.substring(0, 4);
+    }
+
+    // Returns sort preference, either "Most Popular" or "Top Rated"
+    public static String getSortPref(Context context) {
+
+        SharedPreferences mSharedPreferences;
+        String PREFS_NAME_SORT = context.getString(R.string
+                .PREFS_NAME_SORT);
+        String PREFS_KEY_SORT = context.getString(R.string.PREFS_KEY_SORT);
+        String mSearchParam;
+
+        mSharedPreferences = context.getSharedPreferences(PREFS_NAME_SORT, 0);
+        mSearchParam = mSharedPreferences.getString(PREFS_KEY_SORT, context.getString(R
+                .string.pref_sort_default));
+
+        return mSearchParam;
+    }
 
     //    Builds and Returns Main Query URL
     public String getUrl(Context context, String searchParam, Integer page) {
@@ -32,11 +54,6 @@ public class Utility {
                 .build();
 
         url = builtUri.toString();
-
-//        if (!searchParam.equals(context.getString(R.string.param_sort_most_popular))
-//                && !searchParam.equals(context.getString(R.string.param_sort_top_rated))) {
-//            url += "&append_to_response=trailers,reviews";
-//        }
         Log.d("Utility", "getUrl (line 39): " + url);
 
         return url;

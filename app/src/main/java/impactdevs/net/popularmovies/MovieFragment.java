@@ -1,6 +1,6 @@
 package impactdevs.net.popularmovies;
 
-    import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -38,8 +38,8 @@ public class MovieFragment extends Fragment implements SharedPreferences.OnShare
     private String mSearchParam;
     private SharedPreferences mSharedPreferences;
     private String lastSort;
-    public static final String PREFS_NAME = "SortPref";
-    private static final String KEY_SORT = "searchParam";
+    private String PREFS_NAME_SORT;
+    private String PREFS_KEY_SORT;
     private ProgressBar mProgressBar;
 
     public MovieFragment() {
@@ -58,7 +58,9 @@ public class MovieFragment extends Fragment implements SharedPreferences.OnShare
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.moviefragmentmenu, menu);
         String title = "";
-        if (getSortPref().equals(getString(R.string.param_sort_most_popular))) {
+        String sort = Utility.getSortPref(getActivity());
+
+        if (sort.equals(getString(R.string.param_sort_most_popular))) {
             title = getString(R.string.sort_most_popular_title);
         } else {
             title = getString(R.string.sort_top_rated_title);
@@ -70,21 +72,24 @@ public class MovieFragment extends Fragment implements SharedPreferences.OnShare
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        PREFS_NAME_SORT = getString(R.string.PREFS_NAME_SORT);
+        PREFS_KEY_SORT = getString(R.string.PREFS_KEY_SORT);
+
         mSharedPreferences = this.getActivity().getSharedPreferences
-                (PREFS_NAME, 0);
+                (PREFS_NAME_SORT, 0);
         mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         mMovieList.clear();
 
         if (item.getTitle() == getString(R.string.sort_most_popular_title)) {
-            editor.putString(KEY_SORT, getString(R.string.param_sort_top_rated));
+            editor.putString(PREFS_KEY_SORT, getString(R.string.param_sort_top_rated));
             editor.apply();
             item.setTitle(R.string.sort_top_rated_title);
             Toast.makeText(getActivity(),
                     "Sorting change to Top Rated",
                     Toast.LENGTH_LONG).show();
         } else {
-            editor.putString(KEY_SORT, getString(R.string.param_sort_most_popular));
+            editor.putString(PREFS_KEY_SORT, getString(R.string.param_sort_most_popular));
             editor.apply();
             item.setTitle(R.string.sort_most_popular_title);
             Toast.makeText(getActivity(),
@@ -114,11 +119,12 @@ public class MovieFragment extends Fragment implements SharedPreferences.OnShare
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        String sort = Utility.getSortPref(getActivity());
 
         if (savedInstanceState == null || !savedInstanceState.containsKey("movie")) {
             Log.d("MovieFragment", "onCreateView (line 114): no saved instance found");
             mMovieList = new ArrayList<Movie>();
-            fetchData(getSortPref(), null);
+            fetchData(sort, null);
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
             Log.d("MovieFragment", "onCreateView (line 118): restoring saved instance " +
@@ -239,19 +245,20 @@ public class MovieFragment extends Fragment implements SharedPreferences.OnShare
 
     //Initializes Preferences and assigns mSearchParam with preference value for
     // sorting
-    private String getSortPref() {
-        //mSharedPreferences = PreferenceManager.getDefaultSharedPreferences
-        //       (getActivity());
-        mSharedPreferences = this.getActivity().getSharedPreferences(PREFS_NAME, 0);
-        mSearchParam = mSharedPreferences.getString(KEY_SORT, getString(R
-                .string.pref_sort_default));
-
-        return mSearchParam;
-    }
+//    private String getSortPref() {
+//        //mSharedPreferences = PreferenceManager.getDefaultSharedPreferences
+//        //       (getActivity());
+//        mSharedPreferences = this.getActivity().getSharedPreferences(PREFS_NAME_SORT, 0);
+//        mSearchParam = mSharedPreferences.getString(PREFS_KEY_SORT, getString(R
+//                .string.pref_sort_default));
+//
+//        return mSearchParam;
+//    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        fetchData(getSortPref(), null);
+        String sort = Utility.getSortPref(getActivity());
+        fetchData(sort, null);
 
     }
 }

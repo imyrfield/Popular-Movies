@@ -31,7 +31,7 @@ public class TrailersTab extends Fragment {
     private String id;
     private ListView mListView;
     private List<Trailer> mList;
-    private VideoListAdapter mVideoListAdapter;
+    private TrailerListAdapter mTrailerListAdapter;
     private String lastId;
     private View emptyView;
 
@@ -54,8 +54,8 @@ public class TrailersTab extends Fragment {
             mList = new ArrayList<Trailer>();
         }
 
-        mVideoListAdapter = new VideoListAdapter(getActivity(), mList);
-        mListView.setAdapter(mVideoListAdapter);
+        mTrailerListAdapter = new TrailerListAdapter(getActivity(), mList);
+        mListView.setAdapter(mTrailerListAdapter);
         emptyView = v.findViewById(android.R.id.empty);
 
         if (lastId == null || !lastId.equals(id)) {
@@ -125,7 +125,7 @@ public class TrailersTab extends Fragment {
                         //Notifying list adapter about data changes
                         //So that it renders the list view with updated data
                         //mAdapter.notifyDataSetChanged();
-                        mVideoListAdapter.notifyDataSetChanged();
+                        mTrailerListAdapter.notifyDataSetChanged();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -160,6 +160,6 @@ public class TrailersTab extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mVideoListAdapter.releaseLoaders();
+        mTrailerListAdapter.releaseLoaders();
     }
 }

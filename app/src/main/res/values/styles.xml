@@ -74,9 +74,9 @@
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_marginRight">@dimen/margin.half</item>
         <item name="android:textSize">@dimen/text.size.small</item>
-        <item name="android:textColor">@color/grey_700</item>
+        <item name="android:textColor">@color/light_grey</item>
         <item name="android:button">@null</item>
-        <item name="android:enabled">false</item>
+        <item name="android:enabled">true</item>
         <item name="android:checked">false</item>
     </style>
 

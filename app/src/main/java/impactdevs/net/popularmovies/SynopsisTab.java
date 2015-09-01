@@ -13,14 +13,13 @@ import android.widget.TextView;
  * Created by Ian on 8/17/2015.
  */
 public class SynopsisTab extends Fragment {
-    Bundle args = new Bundle();
+
+    Bundle args;
     TextView mTextView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -32,7 +31,6 @@ public class SynopsisTab extends Fragment {
         mTextView = (TextView) v.findViewById(R.id.synopsis);
         mTextView.setText(args.getString("synopsis"));
         Log.d("SynopsisTab", " " + args.getString("synopsis"));
-        Log.d("SynopsisTab", "onCreateView (line 32): ");
 
         return v;
     }

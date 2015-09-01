@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * Created by Ian on 8/22/2015.
  */
-public class VideoListAdapter extends BaseAdapter {
+public class TrailerListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
     private Activity mActivity;
@@ -31,7 +31,7 @@ public class VideoListAdapter extends BaseAdapter {
     private final Map<YouTubeThumbnailView, YouTubeThumbnailLoader> thumbnailViewToLoaderMap;
 
 
-    public VideoListAdapter(Activity activity, List<Trailer> trailers) {
+    public TrailerListAdapter(Activity activity, List<Trailer> trailers) {
         this.mTrailers = trailers;
         this.mActivity = activity;
 

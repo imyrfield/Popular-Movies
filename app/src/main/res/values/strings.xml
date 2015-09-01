@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
 
     <!-- Screen Titles -->
     <string name="app_name">PopularMovies</string>
@@ -6,13 +6,11 @@
 
     <!-- API KEY for TheMovieDb.org-->
     <string name="API_KEY"></string>
+    <string name="YouTube_Key"></string>
 
     <!-- URLs -->
     <string name="BASE_URL">http://api.themoviedb.org/3/movie/</string>
     <string name="IMAGE_URL">http://image.tmdb.org/t/p/w185</string>
-    <!-- VIDEOS    api.themoviedb.org/3/movie/[ID]/videos?api_key=[API_KEY] -->
-    <!-- REVIEWS   api.themoviedb.org/3/movie/[ID]/reviews?api_key=[API_KEY]-->
-    <!-- http://api.themoviedb.org/3/movie/[ID]?api_key={API_KEY]&append_to_response=trailers,reviews-->
 
     <!-- URL // PARAMS-->
     <string name="param_sort_top_rated">top_rated</string>
@@ -34,9 +32,11 @@
 
     <!-- Detail View -->
     <string name="detailview_favorite_button">Favorite</string>
-    <string name="detailview_reviews_title">Reviews: (feature coming soon)</string>
-    <string name="detailview_trailers_title">Trailers: (feature coming soon)</string>
-
+    <string name="PREFS_NAME_SORT">SortPref</string>
+    <string name="PREFS_KEY_SORT">searchParam</string>
+    <string name="loading">Loading...</string>
+    <string name="format_rating"><xliff:g id="rating">%1.0f</xliff:g>/10</string>
+    <string name="format_duration"><xliff:g id="duration">%1$s</xliff:g>min</string>
     <!--MISCELLANEOUS -->
 
 </resources>
