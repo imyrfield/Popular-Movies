@@ -29,6 +29,7 @@ public class TrailerListAdapter extends BaseAdapter {
     private String YouTube_Key;
     private final ThumbnailListener thumbnailListener;
     private final Map<YouTubeThumbnailView, YouTubeThumbnailLoader> thumbnailViewToLoaderMap;
+    private Trailer t;
 
 
     public TrailerListAdapter(Activity activity, List<Trailer> trailers) {
@@ -59,8 +60,8 @@ public class TrailerListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Trailer t = mTrailers.get(position);
-
+        t = mTrailers.get(position);
+        YouTubeThumbnailView trailer;
         if (mInflater == null) {
             mInflater = (LayoutInflater) mActivity.getSystemService(Context
                     .LAYOUT_INFLATER_SERVICE);
@@ -68,13 +69,13 @@ public class TrailerListAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.list_item_trailer, null);
-            YouTubeThumbnailView trailer = (YouTubeThumbnailView) convertView.findViewById(R.id
+            trailer = (YouTubeThumbnailView) convertView.findViewById(R.id
                     .list_item_trailer_videoView);
             trailer.setTag(t.getVideoId());
             trailer.initialize(YouTube_Key, thumbnailListener);
 
         } else {
-            YouTubeThumbnailView trailer = (YouTubeThumbnailView) convertView.findViewById(R.id
+            trailer = (YouTubeThumbnailView) convertView.findViewById(R.id
                     .list_item_trailer_videoView);
             YouTubeThumbnailLoader loader = thumbnailViewToLoaderMap.get(trailer);
 
@@ -84,6 +85,21 @@ public class TrailerListAdapter extends BaseAdapter {
                 loader.setVideo(t.getVideoId());
             }
         }
+
+//        trailer.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent;
+//                if(YouTubeIntents.canResolvePlayVideoIntentWithOptions(mActivity)){
+//                    intent = YouTubeIntents.createPlayVideoIntentWithOptions(mActivity,
+//                            t.getVideoId(), true, true);
+//                }else{
+//                    intent = YouTubeIntents.createPlayVideoIntent(mActivity,
+//                            t.getVideoId());
+//                }
+//                mActivity.startActivity(intent);
+//            }
+//        });
 
         TextView title = (TextView) convertView.findViewById(R.id.list_item_trailer_title);
         title.setText(t.getTitle());

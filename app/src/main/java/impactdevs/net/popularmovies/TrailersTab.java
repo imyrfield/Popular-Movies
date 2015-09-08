@@ -39,9 +39,11 @@ public class TrailersTab extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle bundle = getActivity().getIntent().getExtras();
-        id = bundle.getString("id");
-        id += "/videos";
+        Bundle bundle = getArguments();
+        if(bundle != null) {
+            id = bundle.getString("id");
+            id += "/videos";
+        }
     }
 
     @Override
@@ -73,8 +75,8 @@ public class TrailersTab extends Fragment {
                     i = YouTubeIntents.createPlayVideoIntentWithOptions(getActivity(),
                             trailer.getVideoId(), true, true);
                 }else{
-                    i = YouTubeIntents.createPlayVideoIntent(getActivity
-                            (), trailer.getVideoId());
+                    i = YouTubeIntents.createPlayVideoIntent(getActivity(),
+                            trailer.getVideoId());
                 }
 
                 startActivity(i);

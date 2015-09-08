@@ -3,7 +3,6 @@
     <ListPreference
         android:key="@string/pref_sort_key"
         android:title="@string/pref_title_sort"
-        android:dialogTitle="@string/pref_dialog_title_sort"
         android:entries="@array/pref_sort_entries"
         android:entryValues="@array/pref_sort_values"
         android:defaultValue="@string/param_sort_most_popular"/>

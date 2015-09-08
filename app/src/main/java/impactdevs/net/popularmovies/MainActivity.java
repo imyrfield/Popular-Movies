@@ -1,12 +1,15 @@
 package impactdevs.net.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieFragment.Callback,
+        Utility.Callback{
 
     private String lastSort;
     private boolean mTwoPane;
@@ -57,31 +60,53 @@ public class MainActivity extends AppCompatActivity {
             if (mf != null) {
                 mf.fetchData(sort, null);
             }
-            DetailFragment df = (DetailFragment) getSupportFragmentManager()
-                    .findFragmentByTag(DETAILFRAGMENT_TAG);
-            if(null != df){
-                //TODO: onSortChanged (restart loader)
-            }
+
             lastSort = sort;
         }
     }
 
-    //Todo:
-//    public void onItemSelected(Uri contentUri){
-//        if(mTwoPane){
-//            Bundle args = new Bundle();
-//            args.putParcelable(DetailFragment.DETAIL_URI, contentUri);
-//
-//            DetailFragment fragment = new DetailFragment();
-//            fragment.setArguments(args);
-//
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.movie_detail_container, fragment,  DETAILFRAGMENT_TAG)
-//                    .commit();
-//        }else{
-//            Intent intent = new Intent(this, DetailActivity.class)
-//                    .setData();
-//            startActivity(intent);
-//        }
-//    }
+    @Override
+    public void onItemSelected(String id){
+        Bundle args = new Bundle();
+        args.putString("id", id);
+        Log.d("MainActivity", "onItemSelected (line 71): " + id);
+        if(mTwoPane){
+//            args.putAll(movieArgs);
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.movie_detail_container, fragment,  DETAILFRAGMENT_TAG)
+                    .commit();
+        }else{
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtras(args);
+            Log.d("MainActivity", "onItemSelected (line 89): " + intent.getExtras().toString());
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onMovieLoaded(String id){
+        if(mTwoPane) {
+            DetailFragment df = (DetailFragment) getSupportFragmentManager()
+                    .findFragmentByTag(DETAILFRAGMENT_TAG);
+            if (df != null) {
+                df.isFavorite(id);
+
+            }
+        }
+    }
+
+    @Override
+    public void trailerFetchCompleted() {
+        if(mTwoPane) {
+            DetailFragment df = (DetailFragment) getSupportFragmentManager()
+                    .findFragmentByTag(DETAILFRAGMENT_TAG);
+            if (df != null) {
+                df.initializeShareIntent();
+            }
+        }
+    }
 }

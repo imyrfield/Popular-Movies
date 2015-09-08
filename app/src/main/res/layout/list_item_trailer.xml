@@ -26,4 +26,5 @@
         android:padding="@dimen/margin.half"
         android:adjustViewBounds="true"
         />
+
 </LinearLayout>

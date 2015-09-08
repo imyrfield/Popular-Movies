@@ -5,6 +5,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Class with Miscellaneous Utility methods.
  * Created by Ian on 7/20/2015.
@@ -13,6 +21,14 @@ public class Utility {
 
     public String url;
     public String imageUrl;
+    private String trailer;
+    private String trailerUrl;
+    private Context mContext;
+
+    public interface Callback {
+
+        void trailerFetchCompleted();
+    }
 
     //Reducing string from 2015-06-12 to just 2015
     public static String formatDate(String date) {
@@ -72,5 +88,58 @@ public class Utility {
         imageUrl = builtUri.toString();
 
         return imageUrl;
+    }
+
+    public void getFirstTrailer(Context context, String id) {
+
+        mContext = context;
+        String searchParam = id + "/videos";
+        String url = getUrl(context, searchParam, null);
+
+        //Creating Volley request obj
+        final JsonObjectRequest req = new JsonObjectRequest(url, new
+                Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        //Returns full Json request string
+                        Log.d("Utility", "onResponse (line 98): " + response.toString());
+
+                        // Parsing JSON
+                        try {
+                            JSONArray results = response.getJSONArray("results");
+                            for (int i = 0; i < 1; i++) {
+                                JSONObject jsonObject = results.getJSONObject(i);
+                                try {
+
+                                    trailer = jsonObject.getString("key");
+                                    Log.d("Utility", "getFirstTrailer (line 126): " + trailer);
+                                    ((Callback) mContext).trailerFetchCompleted();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Utility", "onErrorResponse (line 119): " + error.getMessage());
+            }
+        });
+
+        VolleyClass.getInstance().addToRequestQueue(req);
+    }
+
+    public String formatUrl() {
+
+        final String baseUrl = mContext.getString(R.string.youtube_url);
+        trailerUrl = baseUrl + trailer;
+        Log.d("Utility", "formatUrl (line 138): " + trailerUrl);
+        return trailerUrl;
     }
 }

@@ -24,7 +24,8 @@
         <!-- Detail Activity -->
         <activity
             android:name=".DetailActivity"
-            android:theme="@style/NoActionBar"
+            android:theme="@style/AppTheme"
+            android:label="@string/activity_detail_title"
             android:parentActivityName=".MainActivity">
         </activity>
         <provider

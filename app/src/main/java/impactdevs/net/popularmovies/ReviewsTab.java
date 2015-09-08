@@ -30,21 +30,21 @@ public class ReviewsTab extends Fragment {
     private View emptyView;
     private List<Review> mList;
     private ReviewListAdapter mReviewListAdapter;
-//    private List<String> reviews;
-//    private ArrayAdapter<String> mArrayAdapter;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle bundle = getActivity().getIntent().getExtras();
-        id = bundle.getString("id");
-        id += "/reviews";
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            id = bundle.getString("id");
+            id += "/reviews";
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+Log.d("ReviewsTab", "onCreateView (line 50): ");
         View v = inflater.inflate(R.layout.fragment_reviews, container, false);
         mListView = (ListView) v.findViewById(R.id.list_reviews);
 
@@ -53,7 +53,6 @@ public class ReviewsTab extends Fragment {
         }
 
         mReviewListAdapter = new ReviewListAdapter(getActivity(),  mList);
-//        mArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item, reviews);
         mListView.setAdapter(mReviewListAdapter);
         emptyView = v.findViewById(android.R.id.empty);
 
@@ -89,10 +88,7 @@ public class ReviewsTab extends Fragment {
 
                                 JSONObject jsonObject = results.getJSONObject(i);
                                 try {
-                                    //String[] r = new String[results.length()];
-                                    //r[i] = jsonObject.getString("content");
-                                    //reviews = Arrays.asList(r);
-//                                    reviews.remove(0);
+
                                     Review c = new Review();
                                     c.setAuthor(jsonObject.getString("author"));
                                     c.setComment(jsonObject.getString("content"));
