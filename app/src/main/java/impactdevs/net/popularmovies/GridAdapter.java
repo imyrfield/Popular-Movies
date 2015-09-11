@@ -62,11 +62,11 @@ public class GridAdapter extends BaseAdapter {
 
         //Image
         Utility utility = new Utility();
-            Glide.with(mActivity)
-                    .load(utility.getImageUrl(m.getThumbnailUrl()))
-                    .error(R.drawable.placeholder)
-                    .crossFade()
-                    .into(imageView);
+        Glide.with(mActivity)
+                .load(utility.getImageUrl(m.getThumbnailUrl()))
+                .error(R.drawable.placeholder)
+                .crossFade()
+        .into(imageView);
 
         return convertView;
     }

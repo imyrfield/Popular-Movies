@@ -1,12 +1,10 @@
-<fragment
-    android:id="@+id/fragment_main"
-    android:name="impactdevs.net.popularmovies.MovieFragment"
+<FrameLayout
+    android:id="@+id/movie_detail_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="impactdevs.net.popularmovies.MovieFragment"
+    tools:context=".DetailActivity"
     tools:ignore="MergeRootFrame"
-    tools:layout="@android:layout/list_content"
     >
-</fragment>
+</FrameLayout>

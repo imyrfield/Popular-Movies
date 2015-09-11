@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Movie Object Class
+ * Movie Object Class.
  * Created by Ian on 7/20/2015.
  */
 public class Movie implements Parcelable{
@@ -12,6 +12,7 @@ public class Movie implements Parcelable{
     private String movieTitle, thumbnailUrl, movieSynopsis, releaseDate, id;
     private int duration;
     private double rating;
+
 
     public Movie() {
     }
@@ -23,13 +24,9 @@ public class Movie implements Parcelable{
         this.thumbnailUrl = thumbnailUrl;
         this.movieSynopsis = movieSynopsis;
         this.releaseDate = releaseDate;
+        this.id = id;
         this.duration = duration;
         this.rating = rating;
-        this.id = id;
-    }
-
-    public String getMovieSynopsis() {
-        return movieSynopsis;
     }
 
     public int getDuration() {
@@ -38,6 +35,10 @@ public class Movie implements Parcelable{
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getMovieSynopsis() {
+        return movieSynopsis;
     }
 
     public void setMovieSynopsis(String movieSynopsis) {
@@ -86,13 +87,13 @@ public class Movie implements Parcelable{
 
 //  Methods used for Parcelable implementation
     private Movie(Parcel in) {
-        id = in.readString();
         movieTitle = in.readString();
         thumbnailUrl = in.readString();
+        movieSynopsis = in.readString();
         releaseDate = in.readString();
+        id = in.readString();
         duration = in.readInt();
         rating = in.readDouble();
-        movieSynopsis = in.readString();
     }
 
     @Override
@@ -102,13 +103,13 @@ public class Movie implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(id);
         parcel.writeString(movieTitle);
         parcel.writeString(thumbnailUrl);
+        parcel.writeString(movieSynopsis);
         parcel.writeString(releaseDate);
+        parcel.writeString(id);
         parcel.writeInt(duration);
         parcel.writeDouble(rating);
-        parcel.writeString(movieSynopsis);
     }
 
     public final Parcelable.Creator<Movie> CREATOR = new Parcelable

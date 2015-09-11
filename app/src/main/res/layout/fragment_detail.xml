@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".DetailActivity"
+    >
+    <!-- AutoFits text which is would otherwise run off the screen -->
+    <me.grantland.widget.AutofitTextView
+        android:id="@+id/detailview_title"
+        style="@style/style_text_title"
+        tools:text="Jurrasic Park"
+        />
+    <!-- Main details portion-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/margin.half"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/detailview_poster"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:paddingLeft="@dimen/margin.half"
+            android:paddingRight="@dimen/margin.half"
+            tools:src="@drawable/jpark"
+            />
+        <!--Content to the right of the image -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/default_margin"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/detailview_release_date"
+                style="@style/style_text_medium"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/loading"
+                />
+
+            <TextView
+                android:id="@+id/detailview_duration"
+                style="@style/style_text_medium"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/loading"
+                />
+
+            <TextView
+                android:id="@+id/detailview_rating"
+                style="@style/style_text_medium"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/loading"
+                />
+
+            <CheckBox
+                android:id="@+id/favorite_checkbox"
+                style="@style/favorite_button"
+                />
+        </LinearLayout>
+    </LinearLayout>
+    <!-- Bottom portion of screen (Synopsis, and Trailer)-->
+    <android.support.v4.app.FragmentTabHost
+        android:id="@android:id/tabhost"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                />
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                />
+        </LinearLayout>
+    </android.support.v4.app.FragmentTabHost>
+</LinearLayout>
