@@ -34,7 +34,6 @@ public class MovieProvider extends ContentProvider {
     static final int MOVIE_WITH_ID = 2;
 
 
-    // movie.movie_id = ?
     private static final String sMovieIdSelection =
             DataContract.MovieEntry.TABLE_NAME +
                     "." + DataContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ";
@@ -77,9 +76,6 @@ public class MovieProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
-            // Student: Uncomment and fill out these two cases
-//            case WEATHER_WITH_LOCATION_AND_DATE:
-//            case WEATHER_WITH_LOCATION:
             case MOVIE:
                 return DataContract.MovieEntry.CONTENT_DIR_TYPE;
             case MOVIE_WITH_ID:
@@ -151,7 +147,6 @@ public class MovieProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Student: Start by getting a writable database
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;

@@ -86,21 +86,6 @@ public class TrailerListAdapter extends BaseAdapter {
             }
         }
 
-//        trailer.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent;
-//                if(YouTubeIntents.canResolvePlayVideoIntentWithOptions(mActivity)){
-//                    intent = YouTubeIntents.createPlayVideoIntentWithOptions(mActivity,
-//                            t.getVideoId(), true, true);
-//                }else{
-//                    intent = YouTubeIntents.createPlayVideoIntent(mActivity,
-//                            t.getVideoId());
-//                }
-//                mActivity.startActivity(intent);
-//            }
-//        });
-
         TextView title = (TextView) convertView.findViewById(R.id.list_item_trailer_title);
         title.setText(t.getTitle());
 

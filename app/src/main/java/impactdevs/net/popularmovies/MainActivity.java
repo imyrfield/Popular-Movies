@@ -9,27 +9,28 @@ import android.view.MenuItem;
 
 
 public class MainActivity extends AppCompatActivity implements MovieFragment.Callback,
-        Utility.Callback{
+        Utility.Callback {
 
-    private String lastSort;
     private boolean mTwoPane;
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+//        Log.d("MainActivity", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        lastSort = Utility.getSortPref(this);
 
         if (findViewById(R.id.movie_detail_container) != null) {
             mTwoPane = true;
+//            Log.d("MainActivity", "onCreate (line 26): Tablet mode");
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.movie_detail_container, new DetailFragment(),
                                 DETAILFRAGMENT_TAG)
                         .commit();
             }
-        }else{
+        } else {
+//            Log.d("MainActivity", "onCreate (line 34): Cellphone mode");
             mTwoPane = false;
         }
     }
@@ -51,57 +52,46 @@ public class MainActivity extends AppCompatActivity implements MovieFragment.Cal
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        String sort = Utility.getSortPref(this);
-        if (sort != null && !sort.equals(lastSort)) {
-            MovieFragment mf = (MovieFragment) getSupportFragmentManager().findFragmentById
-                    (R.id.fragment_main);
-            if (mf != null) {
-                mf.fetchData(sort, null);
-            }
-
-            lastSort = sort;
-        }
-    }
-
-    @Override
-    public void onItemSelected(String id){
+    public void onItemSelected(String id) {
         Bundle args = new Bundle();
         args.putString("id", id);
-        Log.d("MainActivity", "onItemSelected (line 71): " + id);
-        if(mTwoPane){
-//            args.putAll(movieArgs);
+        Log.d("MainActivity", "onItemSelected, id: " + id);
+        if (mTwoPane) {
 
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.movie_detail_container, fragment,  DETAILFRAGMENT_TAG)
+                    .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
                     .commit();
-        }else{
+        } else {
             Intent intent = new Intent(this, DetailActivity.class)
                     .putExtras(args);
-            Log.d("MainActivity", "onItemSelected (line 89): " + intent.getExtras().toString());
             startActivity(intent);
         }
     }
 
     @Override
-    public void onMovieLoaded(String id){
-        if(mTwoPane) {
+    public void onMovieLoaded(String id) {
+
+        Log.d("MainActivity", "onMovieLoaded (line 92): " + id);
+
+        if (mTwoPane) {
+//            Log.d("MainActivity", "onMovieLoaded (line 94): Tablet Mode");
             DetailFragment df = (DetailFragment) getSupportFragmentManager()
                     .findFragmentByTag(DETAILFRAGMENT_TAG);
             if (df != null) {
+                Log.d("MainActivity", "onMovieLoaded (line 97): detail fragment NOT null");
                 df.isFavorite(id);
-
             }
+        } else {
+//            Log.d("MainActivity", "onMovieLoaded (line 112): Cellphone mode");
         }
     }
 
     @Override
     public void trailerFetchCompleted() {
-        if(mTwoPane) {
+        if (mTwoPane) {
             DetailFragment df = (DetailFragment) getSupportFragmentManager()
                     .findFragmentByTag(DETAILFRAGMENT_TAG);
             if (df != null) {

@@ -4,7 +4,6 @@ package impactdevs.net.popularmovies;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 
 /**
@@ -12,7 +11,6 @@ import android.util.Log;
  */
 public class DetailActivity extends AppCompatActivity implements Utility.Callback {
 
-    private DetailFragment mDetailFragment;
     private static String DETAILFRAGMENT_TAG = "DFTAG";
 
     @Override
@@ -20,25 +18,15 @@ public class DetailActivity extends AppCompatActivity implements Utility.Callbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        // Prevents landscape orientation on phones.
+        // Prevents landscape orientation on phones. Not because it doesn't save the
+        // instance but because it doesn't look good aesthetically.
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        mDetailFragment = (DetailFragment) fragmentManager.findFragmentByTag
-//                (FRAGMENT_DETAIL_TAG);
-//        if (mDetailFragment == null) {
-//            Log.e("DetailActivity", "onCreate (line 53): mDetailFragment is NULL");
-//            mDetailFragment = new DetailFragment();
-//        }
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.container_detail, mDetailFragment, FRAGMENT_DETAIL_TAG)
-//                .commit();
 
         if (savedInstanceState == null) {
 
             Bundle arguments = new Bundle();
             arguments.putAll(getIntent().getExtras());
-            Log.d("DetailActivity", "onCreate (line 40): " + arguments.toString());
+//            Log.d("DetailActivity", "onCreate (line 40): " + arguments.toString());
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(arguments);
 

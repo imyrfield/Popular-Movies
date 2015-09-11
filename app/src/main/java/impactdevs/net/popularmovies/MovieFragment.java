@@ -1,13 +1,13 @@
 package impactdevs.net.popularmovies;
 
 import android.content.Context;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,44 +37,27 @@ import impactdevs.net.popularmovies.data.DataContract;
  * Created by Ian on 7/23/2015.
  */
 public class MovieFragment extends Fragment implements SharedPreferences
-        .OnSharedPreferenceChangeListener, LoaderCallbacks<Cursor> {
+        .OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private ArrayList<Movie> mMovieList;
     private GridView mGridView;
     private GridAdapter mGridAdapter;
-    private FavoriteAdapter mFavoriteAdapter;
-    private String mSearchParam;
     private SharedPreferences mSharedPreferences;
-    private String lastSort;
     private String PREFS_NAME_SORT;
     private String PREFS_KEY_SORT;
     private ProgressBar mProgressBar;
     private Context mContext;
     private String sort;
 
-    private static final int FAVORITE_LOADER = 1;
-
-    private static final String[] MOVIE_COLUMNS = {
-            DataContract.MovieEntry._ID,
-            DataContract.MovieEntry.COLUMN_MOVIE_ID,
-            DataContract.MovieEntry.COLUMN_TITLE,
-            DataContract.MovieEntry.COLUMN_RELEASE_DATE,
-            DataContract.MovieEntry.COLUMN_DURATION,
-            DataContract.MovieEntry.COLUMN_RATING,
-            DataContract.MovieEntry.COLUMN_SYNOPSIS,
-            DataContract.MovieEntry.COLUMN_IMAGE_URL};
-
-    static final int COL_ID = 0;
-    static final int COL_MOVIE_ID = 1;
-    static final int COL_TITLE = 2;
-    static final int COL_RELEASE_DATE = 3;
-    static final int COL_DURATION = 4;
-    static final int COL_RATING = 5;
-    static final int COL_SYNOPSIS = 6;
-    static final int COL_IMAGE_URL = 7;
+    private int mPosition = GridView.INVALID_POSITION;
+    private static final String SELECTED_KEY = "selected_position";
+    private static final int COL_MOVIE_ID = 1;
+    private static final int COL_TITLE = 2;
+    private static final int COL_IMAGE_URL = 3;
+    static final int DETAIL_LOADER = 0;
+    static final int MOVIE_LOADER = 1;
 
     public interface Callback {
-
 
         void onItemSelected(String id);
 
@@ -87,6 +70,7 @@ public class MovieFragment extends Fragment implements SharedPreferences
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d("MovieFragment", "onCreate");
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
@@ -99,7 +83,7 @@ public class MovieFragment extends Fragment implements SharedPreferences
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.fragment_main_menu, menu);
         String title = "";
-        String sort = Utility.getSortPref(getActivity());
+        sort = Utility.getSortPref(mContext);
 
         if (sort.equals(getString(R.string.param_sort_most_popular))) {
             title = getString(R.string.sort_most_popular_title);
@@ -109,7 +93,6 @@ public class MovieFragment extends Fragment implements SharedPreferences
             title = getString(R.string.sort_favorite_title);
         }
         menu.findItem(R.id.menu_sort_method).setTitle(title);
-
     }
 
     @Override
@@ -146,19 +129,7 @@ public class MovieFragment extends Fragment implements SharedPreferences
                     "Sorting change to Most Popular",
                     Toast.LENGTH_LONG).show();
         }
-        sort = Utility.getSortPref(getActivity());
-        // Todo: Remove refresh button for final version
-//        if (id == R.id.refresh) {
-//                //Assigns mSearchParam with preference value for sorting
-//                mSearchParam = mSharedPreferences.getString(getString(R.string.pref_sort_key), getString
-//                        (R.string.pref_sort_default));
-//
-//                // Initiates network call
-//                mMovieList.clear();
-//                fetchData(mSearchParam);
-//
-//                return true;
-//        }
+        sort = Utility.getSortPref(mContext);
 
         return super.onOptionsItemSelected(item);
     }
@@ -169,31 +140,30 @@ public class MovieFragment extends Fragment implements SharedPreferences
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
-        sort = Utility.getSortPref(getActivity());
-        mGridView = (GridView) rootView.findViewById(R.id.gridView);
-        mMovieList = new ArrayList<Movie>();
-        mFavoriteAdapter = new FavoriteAdapter(getActivity(), null, 0);
-        mGridAdapter = new GridAdapter(getActivity(), mMovieList);
+        sort = Utility.getSortPref(mContext);
 
-        if (savedInstanceState == null || !savedInstanceState.containsKey("movie")) {
-            Log.d("MovieFragment", "onCreateView (line 114): no saved instance found");
-            if (sort.equals(getString(R.string.param_sort_favorites))) {
-                mGridView.setAdapter(mFavoriteAdapter);
-                getLoaderManager().initLoader(FAVORITE_LOADER, null, this);
-            } else {
-                mGridView.setAdapter(mGridAdapter);
-                fetchData(sort, null);
-                mProgressBar.setVisibility(View.VISIBLE);
+        if (savedInstanceState != null) {
+
+            Log.d("MovieFragment", "onCreateView: restoring saved instance state");
+            mMovieList = savedInstanceState.getParcelableArrayList("movie");
+            if (savedInstanceState.containsKey(SELECTED_KEY)) {
+                mPosition = savedInstanceState.getInt(SELECTED_KEY);
+
+                if (mPosition != GridView.INVALID_POSITION) {
+                    mGridView.smoothScrollToPosition(mPosition);
+                }
             }
         } else {
+            mMovieList = new ArrayList<Movie>();
 
-            Log.d("MovieFragment", "onCreateView (line 118): restoring saved instance " +
-                    "state");
-            mMovieList = savedInstanceState.getParcelableArrayList("movie");
         }
-        // TODO: Gridview looses position after rotation. gridview.setSelection(int)
-        // or gridview.smoothScrollToPosition(int)
 
+        mGridView = (GridView) rootView.findViewById(R.id.gridView);
+
+        mGridAdapter = new GridAdapter(getActivity(), mMovieList);
+        mGridView.setAdapter(mGridAdapter);
+
+//        Used for scrollListener
 //        mGridView.setOnScrollListener(new ScrollListener() {
 //            @Override
 //            public void onLoadMore(int page, int totalItemsCount) {
@@ -201,36 +171,20 @@ public class MovieFragment extends Fragment implements SharedPreferences
 //            }
 //        });
 
-
         //Setting up onClick
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long l) {
 
-//                //Packaging variables
-//                Movie movie = (Movie) parent.getItemAtPosition(position);
-//                Intent i = new Intent(getActivity(), DetailActivity.class);
-//                i.putExtra("id", movie.getId());
-//                i.putExtra("title", movie.getMovieTitle());
-//                i.putExtra("image", movie.getThumbnailUrl());
-//
-//                //Starting Detail Activity
-//                startActivity(i);
+                Movie movie = (Movie) parent.getItemAtPosition(position);
+                ((Callback) getActivity())
+                        .onItemSelected(movie.getId());
+                Log.d("MovieFragment", "onItemClick (line 208): " + movie.getId());
 
-                // TODO: ??
-                if (sort.equals(getString(R.string.param_sort_favorites))) {
-                    Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                    if (cursor != null) {
-                        ((Callback) getActivity()).onItemSelected(
-                                cursor.getString(COL_MOVIE_ID));
-                    }
-                } else {
-                    Movie movie = (Movie) parent.getItemAtPosition(position);
-                    ((Callback) getActivity())
-                            .onItemSelected(movie.getId());
-                }
+                mPosition = position;
             }
+
         });
 
         return rootView;
@@ -239,26 +193,20 @@ public class MovieFragment extends Fragment implements SharedPreferences
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("MovieFragment", "onResume");
-//        String currentSortPref = getSortPref();
-//        if(!currentSortPref.equals(lastSort) || mMovieList == null) {
-//
-//            lastSort = currentSortPref;
-//            // Clears previous array
-//            if(mMovieList != null) mMovieList.clear();
-//            // Starts Network Call
-//            fetchData(lastSort);
+        // Restarts loader, or else the loader starts acting funny.
+        getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("movie", mMovieList);
+        if (mPosition != GridView.INVALID_POSITION) {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
         super.onSaveInstanceState(outState);
     }
 
-
     public void fetchData(String searchParam, Integer page) {
-        Log.d("MovieFragment", "fetchData");
 
         Utility util = new Utility();
         String url = util.getUrl(getActivity(), searchParam, page);
@@ -268,7 +216,6 @@ public class MovieFragment extends Fragment implements SharedPreferences
                 Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-
                         //Returns full Json request string
                         // Log.d("MovieFragment", "onResponse (line 118): " + response
                         //        .toString());
@@ -319,60 +266,75 @@ public class MovieFragment extends Fragment implements SharedPreferences
     }
 
     //Initializes Preferences and assigns mSearchParam with preference value for
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        String sort = Utility.getSortPref(getActivity());
+        sort = Utility.getSortPref(mContext);
         if (sort.equals(getString(R.string.param_sort_favorites))) {
-            mGridView.setAdapter(mFavoriteAdapter);
-
-            getLoaderManager().initLoader(FAVORITE_LOADER, null, this);
+            getLoaderManager().initLoader(MOVIE_LOADER, null, this);
         } else {
-            mGridView.setAdapter(mGridAdapter);
             fetchData(sort, null);
         }
-    }
-
-    private Cursor queryMovie() {
-
-        return mContext.getContentResolver().query(
-                DataContract.MovieEntry.CONTENT_URI,
-                null, null, null, null);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        Cursor cursor = queryMovie();
-        if (cursor.moveToFirst()) {
-
-            return new CursorLoader(getActivity(),
-                    DataContract.MovieEntry.CONTENT_URI,
-                    MOVIE_COLUMNS,
-                    null, null, null);
-
-        } else {
-            return null;
-        }
+        return new CursorLoader(
+                getActivity(),
+                DataContract.MovieEntry.CONTENT_URI,
+                null, null,
+                null,
+                null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        mFavoriteAdapter.swapCursor(data);
-
-        if (data.moveToFirst()) {
-            data.moveToFirst();
-            ((Callback) getActivity()).onMovieLoaded(
-                    data.getString(COL_MOVIE_ID));
-        }
-Log.d("MovieFragment", "onLoadFinished (line 369): ");
         mProgressBar.setVisibility(View.GONE);
+
+        if (!data.moveToFirst()) {
+            return;
+        }
+
+        if (sort.equals(getString(R.string.param_sort_favorites))) {
+
+            mMovieList.clear();
+            while (data.moveToNext()) {
+                Movie m = new Movie();
+                m.setId(data.getString(COL_MOVIE_ID));
+                m.setThumbnailUrl(data.getString(COL_IMAGE_URL));
+                m.setMovieTitle(data.getString(COL_TITLE));
+                mMovieList.add(m);
+                Log.d("MovieFragment", "onLoadFinished (line 382): " + m.getId());
+            }
+
+            mGridAdapter.notifyDataSetChanged();
+
+            if (mMovieList.size() > 0) {
+                ((Callback) getActivity()).onMovieLoaded
+                        (mMovieList.get(0).getId());
+            }
+
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mFavoriteAdapter.swapCursor(null);
-        Log.d("MovieFragment", "onLoaderReset (line 376): ");
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+//        Log.d("MovieFragment", "onActivityCreated");
+
+        if (savedInstanceState == null) {
+            if (sort.equals(getString(R.string.param_sort_favorites))) {
+                Log.d("MovieFragment", "onActivityCreated - load favorites");
+                getLoaderManager().initLoader(MOVIE_LOADER, null, this);
+            } else {
+                Log.d("MovieFragment", "onActivityCreated - load from web");
+                fetchData(sort, null);
+            }
+        }
+        super.onActivityCreated(savedInstanceState);
     }
 }

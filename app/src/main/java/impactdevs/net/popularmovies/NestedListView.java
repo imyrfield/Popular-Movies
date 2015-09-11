@@ -9,8 +9,9 @@ import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-/**
- * Created by Ian on 9/1/2015.
+/** UNUSED -- Created by Ian on 9/1/2015.
+ * I was going to implement multiple list views for Detail Fragment, but used
+ * FragmentTabHost instead.
  */
 public class NestedListView extends ListView implements View.OnTouchListener,
         AbsListView.OnScrollListener {

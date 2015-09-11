@@ -44,7 +44,7 @@ public class ReviewsTab extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-Log.d("ReviewsTab", "onCreateView (line 50): ");
+
         View v = inflater.inflate(R.layout.fragment_reviews, container, false);
         mListView = (ListView) v.findViewById(R.id.list_reviews);
 
@@ -66,7 +66,7 @@ Log.d("ReviewsTab", "onCreateView (line 50): ");
     }
 
     public void fetchData(String searchParam) {
-        Log.d("ReviewsTab", "fetchData (line 101): ");
+
         Utility util = new Utility();
         String url = util.getUrl(getActivity(), searchParam, null);
 
@@ -77,13 +77,11 @@ Log.d("ReviewsTab", "onCreateView (line 50): ");
                     public void onResponse(JSONObject response) {
 
                         //Returns full Json request string
-                        // Log.d("MovieFragment", "onResponse (line 118): " + response
-                        //        .toString());
+                        // Log.d("MovieFragment", "onResponse (line 118): " + response.toString());
 
                         //Parsing JSON
                         try {
                             JSONArray results = response.getJSONArray("results");
-                            Log.d("ReviewsTab", "onResponse (line 125): " + results);
                             for (int i = 0; i < results.length(); i++) {
 
                                 JSONObject jsonObject = results.getJSONObject(i);
@@ -128,14 +126,12 @@ Log.d("ReviewsTab", "onCreateView (line 50): ");
             Log.d("ReviewsTab", "isEmpty (line 131): reviews is empty, show emptyView");
             emptyView.setVisibility(View.VISIBLE);
         } else {
-            Log.d("ReviewsTab", "isEmpty (line 134): hiding emptyView");
             emptyView.setVisibility(View.GONE);
         }
     }
 
     @Override
     public void onPause() {
-        Log.d("ReviewsTab", "onPause (line 134): ");
         lastId = id;
         super.onPause();
     }

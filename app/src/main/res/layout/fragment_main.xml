@@ -4,18 +4,21 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:padding="@dimen/default_margin"
-             tools:context=".MainActivity$MovieFragment">
+             tools:context=".MainActivity$MovieFragment"
+    >
 
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        />
+
     <GridView
         android:id="@+id/gridView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:numColumns="2"
-        android:stretchMode="columnWidth"/>
-
+        android:stretchMode="columnWidth"
+        />
 </FrameLayout>

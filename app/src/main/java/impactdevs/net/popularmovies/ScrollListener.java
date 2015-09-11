@@ -3,7 +3,10 @@ package impactdevs.net.popularmovies;
 import android.widget.AbsListView;
 
 /**
- * Created by Ian on 8/15/2015.
+ * UNUSED -- Created by Ian on 8/15/2015.
+ * I Was going to implement infinite scrolling but it didn't work out.
+ * Every time the gridview loaded, it immediately fetched 5-7 pages,
+ * instead of waiting until the user scrolled to bottom of current dataset.
  */
 public abstract class ScrollListener implements AbsListView.OnScrollListener {
 

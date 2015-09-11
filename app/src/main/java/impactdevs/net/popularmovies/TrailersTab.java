@@ -27,7 +27,6 @@ import java.util.List;
  */
 public class TrailersTab extends Fragment {
 
-    // TODO: SaveInstanceState(?), currently, it has to re-poll after rotation.
     private String id;
     private ListView mListView;
     private List<Trailer> mList;
@@ -87,7 +86,6 @@ public class TrailersTab extends Fragment {
     }
 
     public void fetchData(String searchParam) {
-        Log.d("TrailersTab", "fetchData (line 63): ");
         Utility util = new Utility();
         String url = util.getUrl(getActivity(), searchParam, null);
 
@@ -98,7 +96,7 @@ public class TrailersTab extends Fragment {
                     public void onResponse(JSONObject response) {
 
                         //Returns full Json request string
-                        Log.d("TrailersTab", "onResponse (line 74): " + response.toString());
+//                        Log.d("TrailersTab", "onResponse (line 74): " + response.toString());
 
                         // Parsing JSON
                         try {
@@ -147,14 +145,13 @@ public class TrailersTab extends Fragment {
             Log.d("ReviewsTab", "isEmpty (line 131): reviews is empty, show emptyView");
             emptyView.setVisibility(View.VISIBLE);
         } else {
-            Log.d("ReviewsTab", "isEmpty (line 134): hiding emptyView");
+//            Log.d("ReviewsTab", "isEmpty (line 134): hiding emptyView");
             emptyView.setVisibility(View.GONE);
         }
     }
 
     @Override
     public void onPause() {
-        Log.d("ReviewsTab", "onPause (line 134): ");
         lastId = id;
         super.onPause();
     }

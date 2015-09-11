@@ -9,7 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
@@ -33,16 +33,13 @@ import com.bumptech.glide.Glide;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 import impactdevs.net.popularmovies.data.DataContract;
 
 /**
  * For Future implementation of Detail View.
  * Created by Ian on 7/24/2015.
  */
-public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> {
-    // TODO: In landscape, you can't scroll down to the TabHost!!
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private String image, id;
     private TextView mTitle;
@@ -55,7 +52,6 @@ public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> 
 
     private ShareActionProvider mShareActionProvider;
     private Context mContext;
-    private List<String> mReview;
     private Bundle args = new Bundle();
     private Bundle mBundle;
     private FragmentTabHost mTabHost;
@@ -77,14 +73,15 @@ public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> 
     private static final int COL_ID = 0;
     private static final int COL_MOVIE_ID = 1;
     private static final int COL_TITLE = 2;
-    private static final int COL_RELEASE_DATE = 3;
-    private static final int COL_DURATION = 4;
-    private static final int COL_RATING = 5;
-    private static final int COL_SYNOPSIS = 6;
+    static final int COL_RELEASE_DATE = 3;
+    static final int COL_DURATION = 4;
+    static final int COL_RATING = 5;
+    static final int COL_SYNOPSIS = 6;
     private static final int COL_IMAGE_URL = 7;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
@@ -98,12 +95,6 @@ public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> 
         MenuItem menuItem = menu.findItem(R.id.menu_share);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat
                 .getActionProvider(menuItem);
-
-//        if (mShareActionProvider != null) {
-//            mShareActionProvider.setShareIntent(createShareIntent());
-//        } else {
-//            Log.d("DetailFragment", "onCreateOptionsMenu (line 103): Failed");
-//        }
     }
 
     @Override
@@ -148,13 +139,11 @@ public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> 
             m.setId(id);
         }
 
-        Log.d("DetailFragment", "onCreateView (line 149): " + id);
-//        utility.getFirstTrailer(mContext, m.getId());
-
         // Load from DB, if it's a favorite. Otherwise, fetch data from website.
         if (id != null) {
             isFavorite(id);
         }
+
         // Logic for favorite button
         mFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,7 +153,7 @@ public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> 
                         addMovieToFavorites(m);
                         ((CheckBox) v).setChecked(true);
                     } else {
-                        Boolean wasDeleted = removeMovieFromFavorites(m.getId());
+                        Boolean wasDeleted = removeMovieFromFavorites(id);
                         if (wasDeleted.equals(true)) {
                             ((CheckBox) v).setChecked(false);
                         }
@@ -173,7 +162,6 @@ public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> 
                 }
             }
         });
-
         return rootView;
     }
 
@@ -229,7 +217,8 @@ public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> 
     }
 
     private Cursor queryMovie(String id) {
-        Cursor cursor = mContext.getContentResolver().query(
+        Log.d("DetailFragment", "queryMovie (line 232): " + id);
+        Cursor cursor = getActivity().getApplicationContext().getContentResolver().query(
                 DataContract.MovieEntry.CONTENT_URI,
                 new String[]{DataContract.MovieEntry._ID},
                 DataContract.MovieEntry.COLUMN_MOVIE_ID + " = ?",
@@ -274,18 +263,19 @@ public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> 
 
             // The resulting URI contains the ID for the row. Extract the locationId from the Uri.
             movieId = ContentUris.parseId(insertedUri);
-            Log.d("DetailFragment", "Movie Added to favorites");
+            Log.d("DetailFragment", "Movie Added to favorites: " + m.getMovieTitle() +
+            " id: " + m.getId());
         }
 
         movieCursor.close();
-        return 0;
+        return movieId;
     }
 
     private boolean removeMovieFromFavorites(String id) {
-        Log.d("DetailFragment", "Removing movie from favorites");
+        Log.d("DetailFragment", "Removing movie from favorites " + id);
 
         boolean deleteStatus = false;
-Log.d("DetailFragment", "removeMovieFromFavorites (line 288): " + id);
+
         // Check to see if the Movie is already in DB.
         Cursor movieCursor = queryMovie(id);
 
@@ -300,10 +290,12 @@ Log.d("DetailFragment", "removeMovieFromFavorites (line 288): " + id);
                     new String[]{id});
 
             if (deletedUri > 0) {
-                Log.d("DetailFragment", "Removed from favorites");
+                Log.d("DetailFragment", "Removed from favorites: " + m.getMovieTitle() +
+                        " id: " + m.getId());
                 deleteStatus = true;
             } else {
-                Log.d("DetailFragment", "Failed to remove from favorites");
+                Log.d("DetailFragment", "Failed to remove from favorites: " + m.getMovieTitle() +
+                        " id: " + m.getId());
                 deleteStatus = false;
             }
         }
@@ -313,37 +305,27 @@ Log.d("DetailFragment", "removeMovieFromFavorites (line 288): " + id);
     }
 
     public void isFavorite(String id) {
-
+        Log.d("DetailFragment", "isFavorite (line 316): " + id);
         Cursor cursor = queryMovie(id);
-        boolean favorite = false;
         utility.getFirstTrailer(mContext, id);
         args.putString("id", id);
         if (cursor.moveToFirst()) {
+            this.id = id;
             mFavorite.setChecked(true);
-            favorite = true;
-            if(!getLoaderManager().hasRunningLoaders()) {
-                getLoaderManager().initLoader(DETAIL_LOADER, args, this);
-            }
-
+            getLoaderManager().restartLoader(DetailFragment.DETAIL_LOADER, args, this);
+            Log.d("DetailFragment", "isFavorite: loading from DB");
         } else {
+            mFavorite.setChecked(false);
             makeJsonObjectRequest(id);
-
+            Log.d("DetailFragment", "isFavorite: loading from web");
         }
+        cursor.close();
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        long position;
-        Uri uri;
-        String mId = args.getString("id");
-        Cursor c = queryMovie(mId);
-        if (c.moveToFirst()) {
-            position = c.getPosition();
 
-        } else {
-            position = -1;
-        }
-        uri = DataContract.MovieEntry.buildMovieUri(position);
+        String mId = args.getString("id");
 
         return new CursorLoader(
                 getActivity(),
@@ -356,10 +338,11 @@ Log.d("DetailFragment", "removeMovieFromFavorites (line 288): " + id);
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
         if (!data.moveToFirst()) {
             return;
         }
-
+        String id = data.getString(COL_MOVIE_ID);
         String title = data.getString(COL_TITLE);
         String releaseDate = data.getString(COL_RELEASE_DATE);
         int duration = data.getInt(COL_DURATION);
@@ -367,19 +350,30 @@ Log.d("DetailFragment", "removeMovieFromFavorites (line 288): " + id);
         String synopsis = data.getString(COL_SYNOPSIS);
         String poster = data.getString(COL_IMAGE_URL);
 
+        m.setId(id);
+        m.setMovieTitle(title);
+        m.setReleaseDate(releaseDate);
+        m.setDuration(duration);
+        m.setRating(rating);
+        m.setMovieSynopsis(synopsis);
+        m.setThumbnailUrl(poster);
+
         mTitle.setText(title);
         mReleaseDate.setText(releaseDate);
         mDuration.setText(getString(R.string.format_duration, duration));
         mRating.setText(getString(R.string.format_rating, rating));
+
         displayPoster(poster);
 
         args.putString("synopsis", synopsis);
         setupSynopsisTab();
+
+        Log.d("DetailFragment", "onLoadFinished (line 375): id: " + data.getString(COL_MOVIE_ID)
+                + " title: " + title);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     /**
@@ -398,9 +392,8 @@ Log.d("DetailFragment", "removeMovieFromFavorites (line 288): " + id);
     }
 
     private Intent createShareIntent() {
-        Log.d("DetailFragment", "createShareIntent (line 393): ");
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
 
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, formatTrailer());
@@ -409,11 +402,11 @@ Log.d("DetailFragment", "removeMovieFromFavorites (line 288): " + id);
     }
 
     private String formatTrailer() {
+
         String comment;
-        Log.d("DetailFragment", "formatTrailer (line 405): ");
         trailerUrl = utility.formatUrl();
-        Log.d("DetailFragment", "formatTrailer (line 403): " + m.getId() + " " +
-                trailerUrl);
+        Log.d("DetailFragment", "formatTrailer (line 403): " + args.getString("id")
+                + " " + trailerUrl);
 
         comment = "Hey, check out this sweet trailer for " +
                 m.getMovieTitle() + ": " +
@@ -431,8 +424,7 @@ Log.d("DetailFragment", "removeMovieFromFavorites (line 288): " + id);
     }
 
     public void initializeShareIntent() {
-        if(mShareActionProvider != null) {
-            Log.d("DetailFragment", "initializeShareIntent (line 432): ");
+        if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(createShareIntent());
         }
     }

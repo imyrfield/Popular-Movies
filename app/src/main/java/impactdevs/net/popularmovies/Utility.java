@@ -70,7 +70,7 @@ public class Utility {
                 .build();
 
         url = builtUri.toString();
-        Log.d("Utility", "getUrl (line 39): " + url);
+//        Log.d("Utility", "getUrl (line 39): " + url);
 
         return url;
     }
@@ -90,6 +90,8 @@ public class Utility {
         return imageUrl;
     }
 
+    // Fetches the first trailer, so that it can be shared, even before switching to the
+    // Trailers tab
     public void getFirstTrailer(Context context, String id) {
 
         mContext = context;
@@ -103,7 +105,8 @@ public class Utility {
                     public void onResponse(JSONObject response) {
 
                         //Returns full Json request string
-                        Log.d("Utility", "onResponse (line 98): " + response.toString());
+
+// Log.d("Utility", "onResponse (line 98): " + response.toString());
 
                         // Parsing JSON
                         try {
@@ -113,7 +116,7 @@ public class Utility {
                                 try {
 
                                     trailer = jsonObject.getString("key");
-                                    Log.d("Utility", "getFirstTrailer (line 126): " + trailer);
+//                                    Log.d("Utility", "getFirstTrailer (line 126): " + trailer);
                                     ((Callback) mContext).trailerFetchCompleted();
 
                                 } catch (JSONException e) {
@@ -139,7 +142,7 @@ public class Utility {
 
         final String baseUrl = mContext.getString(R.string.youtube_url);
         trailerUrl = baseUrl + trailer;
-        Log.d("Utility", "formatUrl (line 138): " + trailerUrl);
+//        Log.d("Utility", "formatUrl (line 138): " + trailerUrl);
         return trailerUrl;
     }
 }
